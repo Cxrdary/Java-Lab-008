@@ -9,6 +9,12 @@ public class FileStats {
 
     // **You will need to complete the FileStats class's constructor, so you can create FileStats objects**
     public FileStats(File f, boolean skipWhiteSpace) throws FileNotFoundException {
+        if (!f.exists()){
+            throw new FileNotFoundException(String.format("File: %s does not exist.", f.getName()));
+        }
+        this.f = f;
+        this.skipWhiteSpace = skipWhiteSpace;
+
         /*
          * Use the File objects exists method to determine if the File passed in actually exists.
          * If it does not exist, throw the FileNotFoundException as shown below:
@@ -49,7 +55,9 @@ public class FileStats {
     // This method should take a line and count the number of characters in that line.
     private static int countChars(String line, boolean skipWhiteSpace) {
         // 1. If skipWhiteSpace is true, use the removeSpaces method to remove whitespace from the line.
-
+        if (skipWhiteSpace) {
+            line = removeSpaces(line);
+        } return line.length();
         // 2. Now write a loop to count the number of characters in the line.
         //    a. HINT: to get the length of a String, use its .length() method!
 
@@ -73,7 +81,14 @@ public class FileStats {
         //    to its buffering mechanisms.
         //    a. HINT: BufferReader's Constructor takes another Reader as an argument. Consider FileReader
         //    b. REF: https://www.geeksforgeeks.org/java-io-bufferedreader-class-java/
-
+        try (BufferedReader br = new BufferedReader(new FileReader(f))){
+            String line;
+            while ((line = br.readLine()) != null){
+                numLines++;
+                numWords+= countWords(line);
+                numChars+= countChars(line, skipWhiteSpace);
+            }
+        }
         // 2. Create a loop that uses your BufferedReader object to read the contents of your File object line-by-line
         //    and within the loop count the file's lines, words, and characters. Store them in the FileStats class's
         //    instance variables, so you can retrieve them in your main method.
